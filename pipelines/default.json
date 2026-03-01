@@ -1,0 +1,12 @@
+{
+  "name": "Default",
+  "nodes": [
+    {"id": "1", "type": "input", "label": "Input", "config": {"source": "ChatApp", "type": "text"}, "pos_x": 50, "pos_y": 200},
+    {"id": "2", "type": "wendy", "label": "Wendy", "config": {"role": "main", "model": "auto", "prompt": "You are Wendy, a helpful AI assistant."}, "pos_x": 320, "pos_y": 200},
+    {"id": "3", "type": "output", "label": "Output", "config": {"target": "ChatApp", "format": "text"}, "pos_x": 590, "pos_y": 200}
+  ],
+  "edges": [
+    {"from": "1", "to": "2"},
+    {"from": "2", "to": "3"}
+  ]
+}

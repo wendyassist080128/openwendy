@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenWendy — Setup</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#080818;color:#e0e0e0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:#12122a;border:1px solid #2a2a4a;border-radius:16px;max-width:520px;width:90vw;padding:40px;box-shadow:0 8px 40px rgba(0,0,0,0.6)}
+.logo{text-align:center;font-size:28px;font-weight:800;color:#e94560;margin-bottom:6px;letter-spacing:1px}
+.subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:24px}
+.steps{display:flex;justify-content:center;gap:12px;margin-bottom:28px}
+.step-dot{width:32px;height:32px;border-radius:50%;background:#1a1a3a;border:2px solid #2a2a4a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#555;transition:all .3s}
+.step-dot.active{background:#e94560;border-color:#e94560;color:#fff}
+.step-dot.done{background:#2a8a40;border-color:#2a8a40;color:#fff}
+.step{display:none}.step.active{display:block}
+.step h2{font-size:16px;margin-bottom:16px;color:#ccc}
+.tc-box{background:#0a0a1a;border:1px solid #2a2a4a;border-radius:8px;height:220px;overflow-y:scroll;padding:16px;font-size:12px;line-height:1.8;color:#888;margin-bottom:16px}
+label.radio{display:block;padding:10px 14px;margin:6px 0;border:1px solid #2a2a4a;border-radius:8px;cursor:pointer;transition:all .2s;font-size:13px}
+label.radio:hover{border-color:#555}
+label.radio.selected{border-color:#e94560;background:rgba(233,69,96,.08)}
+label.radio input{margin-right:8px}
+.field{margin:10px 0}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:4px}
+.field input,.field select{width:100%;background:#0f0f2a;border:1px solid #2a2a4a;color:#e0e0e0;padding:10px;border-radius:6px;font-size:13px;outline:none}
+.field input:focus,.field select:focus{border-color:#e94560}
+.sub-fields{margin-left:24px;display:none}
+.btn-row{display:flex;gap:10px;margin-top:24px}
+.btn{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:#e94560;color:#fff}.btn-primary:hover{background:#d63050}
+.btn-primary:disabled{background:#444;color:#666;cursor:not-allowed}
+.btn-secondary{background:#1a1a3a;color:#ccc;border:1px solid #2a2a4a}.btn-secondary:hover{border-color:#555}
+.loading{text-align:center;padding:40px 0}
+.spinner{width:40px;height:40px;border:3px solid #2a2a4a;border-top-color:#e94560;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🌸 OpenWendy</div>
+  <div class="subtitle">Your personal AI pipeline runtime</div>
+
+  <div class="steps">
+    <div class="step-dot active" id="dot-1">1</div>
+    <div class="step-dot" id="dot-2">2</div>
+    <div class="step-dot" id="dot-3">3</div>
+    <div class="step-dot" id="dot-4">4</div>
+  </div>
+
+  <!-- Step 1: T&C -->
+  <div class="step active" id="step-1">
+    <h2>Welcome to OpenWendy</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:12px">Run multi-model AI pipelines locally or connect to cloud models.</p>
+    <div class="tc-box" id="tc-box">
+      <p><strong>Terms & Conditions</strong></p><br>
+      <p>1. OpenWendy is open source software provided "as-is" without warranty of any kind, express or implied.</p><br>
+      <p>2. You are solely responsible for any API keys you configure and any costs incurred from using third-party AI services (OpenAI, Anthropic, ElevenLabs, etc.).</p><br>
+      <p>3. All data stays local on your machine unless you explicitly configure external API connections. OpenWendy does not collect telemetry or phone home.</p><br>
+      <p>4. You agree to use OpenWendy in compliance with all applicable laws and the terms of service of any connected APIs.</p><br>
+      <p>5. The developers of OpenWendy are not liable for any damages, losses, or costs arising from the use of this software.</p><br>
+      <p>6. Pipeline configurations and chat history are stored locally in ~/.openwendy/. You are responsible for backing up your data.</p><br>
+      <p>7. Voice synthesis features use third-party APIs (ElevenLabs). Voice cloning must comply with the voice owner's consent and local laws.</p><br>
+      <p>8. OpenWendy may be used for personal or commercial purposes under the project's open source license.</p><br>
+      <p>9. By clicking "Agree", you acknowledge that you have read, understood, and agree to these terms.</p><br>
+      <p>10. These terms may be updated with new releases. Continued use constitutes acceptance of updated terms.</p><br><br>
+      <p style="color:#e94560">↑ Scroll to bottom to continue</p>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-agree" disabled onclick="goStep(2)">I Agree</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Model -->
+  <div class="step" id="step-2">
+    <h2>Step 2 — Select Your Model</h2>
+    <label class="radio selected" id="radio-cloud" onclick="selectProvider('cloud')">
+      <input type="radio" name="provider" value="cloud" checked> ☁️ Cloud API
+    </label>
+    <div class="sub-fields" id="cloud-fields" style="display:block">
+      <div class="field"><label>Provider</label>
+        <select id="cloud-provider"><option>openai</option><option>anthropic</option><option>openrouter</option><option>deepseek</option><option>custom</option></select>
+      </div>
+      <div class="field"><label>API Key</label><input id="cloud-key" type="password" placeholder="sk-..."></div>
+      <div class="field"><label>Model</label><input id="cloud-model" placeholder="gpt-4o"></div>
+    </div>
+    <label class="radio" id="radio-local" onclick="selectProvider('local')">
+      <input type="radio" name="provider" value="local"> 🖥️ Local Model (vLLM / OpenAI-compatible)
+    </label>
+    <div class="sub-fields" id="local-fields">
+      <div class="field"><label>API Base</label><input id="local-base" value="http://localhost:8000/v1"></div>
+      <div class="field"><label>API Key</label><input id="local-key" value="dummy"></div>
+      <div class="field"><label>Model Name</label><input id="local-model" placeholder="qwen2.5-72b"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Channel -->
+  <div class="step" id="step-3">
+    <h2>Step 3 — Connect a Channel</h2>
+    <label class="radio selected" id="radio-telegram" onclick="selectChannel('telegram')">
+      <input type="radio" name="channel" value="telegram" checked> 📱 Telegram
+    </label>
+    <div class="sub-fields" id="telegram-fields" style="display:block">
+      <div class="field"><label>Bot Token</label><input id="tg-token" placeholder="123456:ABC-..."></div>
+    </div>
+    <label class="radio" id="radio-discord" onclick="selectChannel('discord')">
+      <input type="radio" name="channel" value="discord"> 🎮 Discord
+    </label>
+    <div class="sub-fields" id="discord-fields">
+      <div class="field"><label>Bot Token</label><input id="dc-token" placeholder="MTI..."></div>
+    </div>
+    <label class="radio" id="radio-none" onclick="selectChannel('none')">
+      <input type="radio" name="channel" value="none"> 💻 None (CLI only)
+    </label>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="doStart()">Start 🚀</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Starting -->
+  <div class="step" id="step-4">
+    <div class="loading">
+      <div class="spinner"></div>
+      <h2>Starting OpenWendy...</h2>
+      <p style="color:#888;font-size:13px;margin-top:8px" id="start-status">Saving configuration...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// T&C scroll detection
+const tcBox = document.getElementById('tc-box');
+const btnAgree = document.getElementById('btn-agree');
+tcBox.addEventListener('scroll', () => {
+  if (tcBox.scrollTop + tcBox.clientHeight >= tcBox.scrollHeight - 10) {
+    btnAgree.disabled = false;
+  }
+});
+
+let currentStep = 1;
+function goStep(n) {
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  document.getElementById(`step-${n}`).classList.add('active');
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById(`dot-${i}`);
+    dot.classList.remove('active', 'done');
+    if (i < n) dot.classList.add('done');
+    else if (i === n) dot.classList.add('active');
+  }
+  currentStep = n;
+}
+
+function selectProvider(type) {
+  document.getElementById('radio-cloud').classList.toggle('selected', type === 'cloud');
+  document.getElementById('radio-local').classList.toggle('selected', type === 'local');
+  document.getElementById('cloud-fields').style.display = type === 'cloud' ? 'block' : 'none';
+  document.getElementById('local-fields').style.display = type === 'local' ? 'block' : 'none';
+}
+
+function selectChannel(type) {
+  ['telegram','discord','none'].forEach(c => {
+    const el = document.getElementById(`radio-${c}`);
+    if (el) el.classList.toggle('selected', c === type);
+  });
+  document.getElementById('telegram-fields').style.display = type === 'telegram' ? 'block' : 'none';
+  document.getElementById('discord-fields').style.display = type === 'discord' ? 'block' : 'none';
+}
+
+async function doStart() {
+  goStep(4);
+  const status = document.getElementById('start-status');
+
+  const isCloud = document.getElementById('radio-cloud').classList.contains('selected');
+  const config = {
+    providers: {
+      cloud: {
+        provider: document.getElementById('cloud-provider').value,
+        apiKey: document.getElementById('cloud-key').value,
+        model: document.getElementById('cloud-model').value || 'gpt-4o'
+      },
+      local: {
+        apiBase: document.getElementById('local-base').value || 'http://localhost:8000/v1',
+        apiKey: document.getElementById('local-key').value || 'dummy',
+        model: document.getElementById('local-model').value || 'qwen2.5-72b'
+      },
+      active: isCloud ? 'cloud' : 'local'
+    },
+    channels: {
+      telegram: { enabled: document.getElementById('radio-telegram').classList.contains('selected'), token: document.getElementById('tg-token').value },
+      discord: { enabled: document.getElementById('radio-discord').classList.contains('selected'), token: document.getElementById('dc-token').value }
+    },
+    elevenlabs: { apiKey: '', voiceId: 'zGjIP4SZlMnY9m93k97r', model: 'eleven_v3' },
+    onboarded: true
+  };
+
+  try {
+    status.textContent = 'Saving configuration...';
+    await fetch('/api/config/save', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(config) });
+
+    status.textContent = 'Starting runtime...';
+    await fetch('/api/runtime/start', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({pipeline:'default'}) });
+
+    status.textContent = 'Redirecting to dashboard...';
+    setTimeout(() => window.location.href = '/dashboard', 1500);
+  } catch(e) {
+    status.textContent = '❌ Error: ' + e.message;
+  }
+}
+</script>
+</body>
+</html>
